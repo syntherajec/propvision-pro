@@ -1,49 +1,61 @@
 /* ============================================================
    PropVision Pro — Auth System (Lisensi Kode)
-   
+
    Cara kerja:
-   - Admin generate kode lisensi unik (contoh: PVP-X7K2-9QMR)
-   - Kode disimpan di dalam file ini (VALID_LICENSES)
-   - Pembeli input kode di halaman login
-   - Kode valid → langsung masuk, nama tersimpan di browser mereka
-   - Berfungsi di device manapun
+   - Admin generate kode di admin.html → tersimpan otomatis
+   - Pembeli input kode → langsung bisa akses, tanpa upload ulang
    ============================================================ */
 
 const Auth = (() => {
 
-  /* ============================================================
-     DAFTAR KODE LISENSI VALID
-     Edit bagian ini untuk tambah / hapus lisensi pembeli.
-     Format: { code: 'KODE', name: 'Nama Pembeli', note: 'Catatan' }
-     ============================================================ */
-  const VALID_LICENSES = [
-    { code: 'PVP-DEMO-2026', name: 'Demo User',    note: 'Akun demo' },
-    // Tambahkan kode lisensi pembeli di sini:
-    // { code: 'PVP-XXXX-XXXX', name: 'Nama Pembeli', note: 'Catatan' },
+  /* ---- Lisensi bawaan (tidak bisa dihapus dari admin) ---- */
+  const BUILTIN_LICENSES = [
+    { code: 'PVP-DEMO-2026', name: 'Demo User', note: 'Akun demo' },
   ];
 
   const KEYS = {
     SESSION:    'pvp_session',
     ATTEMPTS:   'pvp_attempts',
-    LOCK_UNTIL: 'pvp_lock_until'
+    LOCK_UNTIL: 'pvp_lock_until',
+    LICENSES:   'pvp_licenses'   // lisensi yang di-generate admin
   };
 
   const MAX_ATTEMPTS  = 5;
-  const LOCK_DURATION = 60 * 1000; // 60 detik
+  const LOCK_DURATION = 60 * 1000;
+
+  /* ---- Lisensi dari localStorage (di-generate admin) ---- */
+  const getStoredLicenses = () => {
+    try { return JSON.parse(localStorage.getItem(KEYS.LICENSES)) || []; }
+    catch { return []; }
+  };
+
+  const saveStoredLicenses = (list) => {
+    localStorage.setItem(KEYS.LICENSES, JSON.stringify(list));
+  };
+
+  /* ---- Gabungan semua lisensi ---- */
+  const getLicenses = () => [...BUILTIN_LICENSES, ...getStoredLicenses()];
+
+  /* ---- Tambah lisensi baru (dipanggil admin) ---- */
+  const addLicense = (code, name, note = '') => {
+    const list = getStoredLicenses();
+    list.push({ code, name, note, createdAt: new Date().toISOString() });
+    saveStoredLicenses(list);
+  };
+
+  /* ---- Hapus lisensi (hanya yang dari localStorage) ---- */
+  const removeLicense = (code) => {
+    const list = getStoredLicenses().filter(l => l.code !== code);
+    saveStoredLicenses(list);
+  };
 
   /* ---- Session ---- */
   const getSession = () => {
     try { return JSON.parse(localStorage.getItem(KEYS.SESSION)); }
     catch { return null; }
   };
-
-  const setSession = (data) => {
-    localStorage.setItem(KEYS.SESSION, JSON.stringify(data));
-  };
-
-  const clearSession = () => {
-    localStorage.removeItem(KEYS.SESSION);
-  };
+  const setSession = (data) => localStorage.setItem(KEYS.SESSION, JSON.stringify(data));
+  const clearSession = () => localStorage.removeItem(KEYS.SESSION);
 
   /* ---- Attempt / Lock ---- */
   const getAttempts  = () => parseInt(localStorage.getItem(KEYS.ATTEMPTS) || '0');
@@ -58,29 +70,22 @@ const Auth = (() => {
   const isLocked      = () => Date.now() < getLockUntil();
   const remainingLock = () => Math.ceil((getLockUntil() - Date.now()) / 1000);
 
-  /* ---- Normalize kode: uppercase, strip spasi ---- */
+  /* ---- Normalize kode ---- */
   const normalizeCode = (raw) => raw.trim().toUpperCase().replace(/\s+/g, '');
 
-  /* ---- Login dengan kode lisensi ---- */
+  /* ---- Login ---- */
   const login = (rawCode) => {
-    if (isLocked()) {
-      return { ok: false, locked: true, seconds: remainingLock() };
-    }
+    if (isLocked()) return { ok: false, locked: true, seconds: remainingLock() };
 
     const code    = normalizeCode(rawCode);
-    const license = VALID_LICENSES.find(l => normalizeCode(l.code) === code);
+    const license = getLicenses().find(l => normalizeCode(l.code) === code);
 
     if (license) {
       clearLock();
-      setSession({
-        code:    license.code,
-        name:    license.name,
-        loginAt: Date.now()
-      });
+      setSession({ code: license.code, name: license.name, loginAt: Date.now() });
       return { ok: true, name: license.name };
     }
 
-    // Salah kode
     const attempts = getAttempts() + 1;
     setAttempts(attempts);
     if (attempts >= MAX_ATTEMPTS) {
@@ -91,43 +96,31 @@ const Auth = (() => {
     return { ok: false, locked: false, remaining: MAX_ATTEMPTS - attempts };
   };
 
-  const logout = () => {
-    clearSession();
-    window.location.href = 'index.html';
-  };
+  const logout = () => { clearSession(); window.location.href = 'index.html'; };
 
   /* ---- Guards ---- */
   const requireAuth = () => {
-    if (!getSession()) {
-      window.location.href = 'index.html';
-      return false;
-    }
+    if (!getSession()) { window.location.href = 'index.html'; return false; }
     return true;
   };
-
   const requireGuest = () => {
-    if (getSession()) {
-      window.location.href = 'dashboard.html';
-      return false;
-    }
+    if (getSession()) { window.location.href = 'dashboard.html'; return false; }
     return true;
   };
 
-  /* ---- Generate kode lisensi baru (dipakai admin.js) ---- */
+  /* ---- Generate kode ---- */
   const generateLicenseCode = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     const seg = (len) => Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
     return `PVP-${seg(4)}-${seg(4)}`;
   };
 
-  /* ---- Expose VALID_LICENSES untuk admin panel ---- */
-  const getLicenses = () => VALID_LICENSES;
-
   return {
     login, logout,
     requireAuth, requireGuest,
     getSession,
     isLocked, remainingLock,
-    generateLicenseCode, getLicenses
+    generateLicenseCode,
+    getLicenses, addLicense, removeLicense
   };
 })();
