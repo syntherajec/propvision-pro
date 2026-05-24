@@ -10,7 +10,12 @@ const Auth = (() => {
 
   /* ---- Lisensi bawaan (tidak bisa dihapus dari admin) ---- */
   const BUILTIN_LICENSES = [
-    { code: 'PVP-DEMO-2026', name: 'Demo User', note: 'Akun demo' },
+    { code: 'PVP-DEMO-2026', name: 'Demo User',  note: 'Akun demo' },
+    { code: 'PVP-A3KX-7NQR', name: 'Pembeli 1',  note: '' },
+    { code: 'PVP-B8MZ-4WYT', name: 'Pembeli 2',  note: '' },
+    { code: 'PVP-C5PH-2LSJ', name: 'Pembeli 3',  note: '' },
+    { code: 'PVP-D9FU-6RVE', name: 'Pembeli 4',  note: '' },
+    { code: 'PVP-E2GN-8KBW', name: 'Pembeli 5',  note: '' },
   ];
 
   const KEYS = {
