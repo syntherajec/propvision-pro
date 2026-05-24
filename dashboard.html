@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PropVision Pro — Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/tools.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon"><i class="ti ti-building-skyscraper"></i></div>
+      <div>
+        <div class="sb-logo-name">PropVision Pro</div>
+        <div class="sb-logo-tag">PROPERTY INTELLIGENCE</div>
+      </div>
+    </div>
+
+    <div class="sb-user">
+      <div class="sb-avatar" id="sb-user-init">??</div>
+      <div>
+        <div class="sb-user-name" id="sb-user-name">Loading...</div>
+        <div class="sb-user-role">Agen Properti</div>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-section">
+        <div class="sb-section-label">MENU UTAMA</div>
+        <a href="dashboard.html" class="sb-item active" data-page="dashboard.html">
+          <i class="ti ti-layout-dashboard"></i> Dashboard
+        </a>
+        <a href="tools.html#harga" class="sb-item" data-page="tools.html">
+          <i class="ti ti-chart-bar"></i> Analisa Harga
+        </a>
+        <a href="tools.html#roi" class="sb-item">
+          <i class="ti ti-trending-up"></i> Proyeksi ROI
+        </a>
+        <a href="tools.html#closing" class="sb-item">
+          <i class="ti ti-users"></i> Profil & Skrip Closing
+        </a>
+        <a href="tools.html#risiko" class="sb-item">
+          <i class="ti ti-shield-check"></i> Risiko & Keunggulan
+        </a>
+        <a href="tools.html#laporan" class="sb-item">
+          <i class="ti ti-file-description"></i> Laporan Lengkap
+          <span class="sb-badge">PRO</span>
+        </a>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">AKUN</div>
+        <a href="history.html" class="sb-item" data-page="history.html">
+          <i class="ti ti-history"></i> Riwayat Analisa
+        </a>
+      </div>
+    </nav>
+
+    <div class="sb-bottom">
+      <div class="sb-status">
+        <div class="sb-dot"></div>
+        <div class="sb-status-text">Sistem aktif</div>
+      </div>
+      <div class="sb-action-icons">
+        <button class="sb-icon-btn" data-open-api-modal title="Pengaturan API & Model">
+          <i class="ti ti-settings"></i>
+        </button>
+        <button class="sb-icon-btn" data-logout title="Keluar">
+          <i class="ti ti-logout"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main-content">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div>
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="Menu">
+          <i class="ti ti-menu-2"></i>
+        </button>
+      </div>
+      <div class="topbar-left" style="flex:1;margin-left:8px">
+        <div class="tb-title">Dashboard</div>
+        <div class="tb-sub" id="tb-date"></div>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-icon-btn gold" data-open-api-modal title="Pengaturan API & Model">
+          <i class="ti ti-key"></i>
+          <div class="tb-notif-dot"></div>
+        </button>
+        <button class="tb-icon-btn" data-logout title="Keluar">
+          <i class="ti ti-logout"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="page-content">
+
+      <!-- Hero banner -->
+      <div class="hero-banner">
+        <div style="position:relative;z-index:1">
+          <div class="hero-greeting" id="hero-greeting">SELAMAT DATANG</div>
+          <div class="hero-name" id="hero-name">...</div>
+          <div class="hero-sub">Analisa properti Anda hari ini dengan lebih percaya diri.</div>
+        </div>
+        <div class="hero-right">
+          <div class="hero-date" id="hero-date"></div>
+          <div class="hero-status-pill">
+            <i class="ti ti-circle-check"></i>
+            <span>Sistem Siap Digunakan</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon stat-icon-gold"><i class="ti ti-chart-bar"></i></div>
+            <div class="stat-trend" id="stat-trend">Mulai analisa</div>
+          </div>
+          <div class="stat-val" id="stat-total">0</div>
+          <div class="stat-label">Total analisa bulan ini</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon stat-icon-navy"><i class="ti ti-file-text"></i></div>
+            <div class="stat-trend" style="background:var(--info-bg);color:#175CD3">Laporan</div>
+          </div>
+          <div class="stat-val" id="stat-laporan">0</div>
+          <div class="stat-label">Laporan lengkap dibuat</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon stat-icon-green"><i class="ti ti-bolt"></i></div>
+            <div class="stat-trend">Cepat</div>
+          </div>
+          <div class="stat-val" id="stat-cepat">0</div>
+          <div class="stat-label">Analisa cepat selesai</div>
+        </div>
+      </div>
+
+      <!-- Features -->
+      <div class="section-heading">
+        <i class="ti ti-apps"></i> FITUR ANALISA
+      </div>
+
+      <div class="features-grid">
+        <a href="tools.html#harga" class="feature-card featured">
+          <div class="feature-icon"><i class="ti ti-chart-bar"></i></div>
+          <div>
+            <div class="feature-name">Analisa Kewajaran Harga</div>
+            <div class="feature-desc">Cek harga listing vs rata-rata pasar area secara instan.</div>
+          </div>
+          <div class="feature-arrow"><i class="ti ti-chevron-right"></i></div>
+        </a>
+
+        <a href="tools.html#roi" class="feature-card">
+          <div class="feature-icon"><i class="ti ti-trending-up"></i></div>
+          <div>
+            <div class="feature-name">Proyeksi ROI & Investasi</div>
+            <div class="feature-desc">Estimasi kenaikan nilai properti 1, 3, dan 5 tahun ke depan.</div>
+          </div>
+          <div class="feature-arrow"><i class="ti ti-chevron-right"></i></div>
+        </a>
+
+        <a href="tools.html#closing" class="feature-card">
+          <div class="feature-icon"><i class="ti ti-users"></i></div>
+          <div>
+            <div class="feature-name">Profil Buyer & Skrip Closing</div>
+            <div class="feature-desc">3 skrip closing siap pakai untuk tipe pembeli berbeda.</div>
+          </div>
+          <div class="feature-arrow"><i class="ti ti-chevron-right"></i></div>
+        </a>
+
+        <a href="tools.html#risiko" class="feature-card">
+          <div class="feature-icon"><i class="ti ti-shield-check"></i></div>
+          <div>
+            <div class="feature-name">Analisa Risiko & Keunggulan</div>
+            <div class="feature-desc">Red flag penting dan poin jual terkuat untuk negosiasi.</div>
+          </div>
+          <div class="feature-arrow"><i class="ti ti-chevron-right"></i></div>
+        </a>
+      </div>
+
+      <a href="tools.html#laporan" class="feature-card-full">
+        <div class="feature-full-icon"><i class="ti ti-file-description"></i></div>
+        <div>
+          <div class="feature-full-name">Laporan Konsultasi Lengkap</div>
+          <div class="feature-full-desc">Semua analisa dalam satu laporan profesional siap ditunjukkan ke klien.</div>
+        </div>
+        <div class="feature-full-badge">UNGGULAN</div>
+      </a>
+
+    </div><!-- /page-content -->
+  </main>
+</div>
+
+<!-- ===== API MODAL ===== -->
+<div class="modal-backdrop hidden" id="api-modal">
+  <div class="modal-box api-modal-box">
+    <div class="modal-header">
+      <div class="modal-title"><i class="ti ti-key"></i> Pengaturan API & Model</div>
+      <button class="modal-close" data-close-modal="api-modal"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;line-height:1.6">
+        Masukkan API key OpenRouter Anda. Jika satu key mencapai limit, sistem otomatis beralih ke key berikutnya. Model terpanggil bersamaan dan hasil tercepat yang digunakan.
+      </p>
+
+      <div class="api-section-title">API KEY — OPENROUTER</div>
+      <div id="api-key-slots"></div>
+      <button class="add-slot-btn" id="add-key-btn">
+        <i class="ti ti-plus"></i> Tambah API Key
+      </button>
+
+      <div class="api-section-title">MODEL — OPENROUTER</div>
+      <div id="model-slots"></div>
+      <button class="add-slot-btn" id="add-model-btn">
+        <i class="ti ti-plus"></i> Tambah Model
+      </button>
+
+      <div style="margin-top:12px;padding:10px 14px;background:var(--bg);border-radius:var(--radius-sm);font-size:11px;color:var(--text-muted);line-height:1.6">
+        <strong style="color:var(--text-secondary)">Contoh model gratis OpenRouter:</strong><br>
+        google/gemini-flash-1.5 &nbsp;|&nbsp; meta-llama/llama-3.1-8b-instruct:free<br>
+        mistralai/mistral-7b-instruct:free &nbsp;|&nbsp; qwen/qwen-2-7b-instruct:free
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" data-close-modal="api-modal">Batal</button>
+      <button class="btn btn-gold" id="save-api-btn">
+        <i class="ti ti-check"></i> Simpan Pengaturan
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/history.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

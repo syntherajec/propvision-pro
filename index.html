@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PropVision Pro — Masuk</title>
+  <meta name="description" content="PropVision Pro — Platform Analisa Properti Profesional" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-bg-pattern"></div>
+
+  <div class="auth-card">
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="auth-logo-icon">
+        <i class="ti ti-building-skyscraper"></i>
+      </div>
+      <div class="auth-logo-name">PropVision Pro</div>
+      <div class="auth-logo-tag">PROPERTY INTELLIGENCE</div>
+    </div>
+
+    <h1 class="auth-title">Masukkan Kode Lisensi</h1>
+    <p class="auth-subtitle">Masukkan kode lisensi yang Anda terima untuk mengakses platform.</p>
+
+    <!-- Alert error -->
+    <div id="login-alert" class="alert alert-danger hidden" style="margin-bottom:16px">
+      <i class="ti ti-alert-circle"></i>
+      <span id="login-alert-msg">Kode lisensi tidak valid.</span>
+    </div>
+
+    <!-- Alert locked -->
+    <div id="lock-alert" class="alert alert-warning hidden" style="margin-bottom:16px">
+      <i class="ti ti-lock"></i>
+      <span>Terlalu banyak percobaan. Coba lagi dalam <strong id="lock-countdown">60</strong> detik.</span>
+    </div>
+
+    <form id="login-form" class="auth-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="license-code">Kode Lisensi</label>
+        <div class="input-wrapper">
+          <i class="ti ti-key input-icon"></i>
+          <input
+            type="text"
+            id="license-code"
+            class="form-control"
+            placeholder="Contoh: PVP-X7K2-9QMR"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            style="letter-spacing:2px;font-family:'Courier New',monospace;font-size:15px"
+          />
+        </div>
+        <div id="code-error" class="form-error">Kode lisensi tidak boleh kosong.</div>
+        <div class="form-hint">Kode lisensi dikirimkan oleh penjual melalui WhatsApp.</div>
+      </div>
+
+      <!-- Attempt dots -->
+      <div class="attempt-dots hidden" id="attempt-dots">
+        <div class="attempt-dot" id="dot-1"></div>
+        <div class="attempt-dot" id="dot-2"></div>
+        <div class="attempt-dot" id="dot-3"></div>
+        <div class="attempt-dot" id="dot-4"></div>
+        <div class="attempt-dot" id="dot-5"></div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full btn-lg auth-submit" id="login-btn">
+        <i class="ti ti-login"></i> Masuk ke Platform
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      &copy; 2026 PropVision Pro. Semua hak dilindungi.
+    </div>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script>
+  Auth.requireGuest();
+
+  const form       = document.getElementById('login-form');
+  const loginBtn   = document.getElementById('login-btn');
+  const codeInput  = document.getElementById('license-code');
+  const loginAlert = document.getElementById('login-alert');
+  const loginMsg   = document.getElementById('login-alert-msg');
+  const lockAlert  = document.getElementById('lock-alert');
+  const countdown  = document.getElementById('lock-countdown');
+  const dots       = document.getElementById('attempt-dots');
+
+  // Auto uppercase while typing
+  codeInput.addEventListener('input', () => {
+    const pos = codeInput.selectionStart;
+    codeInput.value = codeInput.value.toUpperCase();
+    codeInput.setSelectionRange(pos, pos);
+  });
+
+  // Check locked on load
+  if (Auth.isLocked()) startLockCountdown();
+
+  let lockTimer = null;
+  function startLockCountdown() {
+    loginBtn.disabled = true;
+    lockAlert.classList.remove('hidden');
+    loginAlert.classList.add('hidden');
+    const tick = () => {
+      const rem = Auth.remainingLock();
+      if (rem <= 0) {
+        lockAlert.classList.add('hidden');
+        loginBtn.disabled = false;
+        clearInterval(lockTimer);
+        return;
+      }
+      countdown.textContent = rem;
+    };
+    tick();
+    lockTimer = setInterval(tick, 500);
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    loginAlert.classList.add('hidden');
+
+    const code = codeInput.value.trim();
+    const codeErr = document.getElementById('code-error');
+    codeErr.classList.remove('show');
+
+    if (!code) { codeErr.classList.add('show'); return; }
+
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<div class="spinner spinner-sm"></div> Memverifikasi...';
+
+    setTimeout(() => {
+      const result = Auth.login(code);
+
+      if (result.ok) {
+        loginBtn.innerHTML = '<i class="ti ti-check"></i> Kode Valid!';
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 500);
+      } else if (result.locked) {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="ti ti-login"></i> Masuk ke Platform';
+        startLockCountdown();
+      } else {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="ti ti-login"></i> Masuk ke Platform';
+
+        const used = 5 - result.remaining;
+        dots.classList.remove('hidden');
+        for (let i = 1; i <= 5; i++) {
+          document.getElementById(`dot-${i}`)?.classList.toggle('used', i <= used);
+        }
+
+        loginMsg.textContent = `Kode lisensi tidak valid. Sisa percobaan: ${result.remaining}x`;
+        loginAlert.classList.remove('hidden');
+        codeInput.select();
+      }
+    }, 700);
+  });
+</script>
+</body>
+</html>

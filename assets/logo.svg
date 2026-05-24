@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <!-- Icon box -->
+  <rect x="0" y="8" width="44" height="44" rx="10" fill="#C9A84C"/>
+  <!-- Building icon -->
+  <rect x="12" y="20" width="6" height="20" rx="1" fill="#0A1628"/>
+  <rect x="21" y="15" width="10" height="25" rx="1" fill="#0A1628"/>
+  <rect x="34" y="22" width="5" height="18" rx="1" fill="#0A1628"/>
+  <!-- Text: PropVision -->
+  <text x="54" y="32" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-weight="600" font-size="18" fill="#0A1628">PropVision</text>
+  <!-- Text: Pro -->
+  <text x="54" y="50" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-weight="500" font-size="11" fill="#C9A84C" letter-spacing="3">PRO</text>
+</svg>

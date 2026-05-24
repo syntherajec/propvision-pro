@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PropVision Pro — Riwayat Analisa</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/tools.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon"><i class="ti ti-building-skyscraper"></i></div>
+      <div>
+        <div class="sb-logo-name">PropVision Pro</div>
+        <div class="sb-logo-tag">PROPERTY INTELLIGENCE</div>
+      </div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-avatar" id="sb-user-init">??</div>
+      <div>
+        <div class="sb-user-name" id="sb-user-name">Loading...</div>
+        <div class="sb-user-role">Agen Properti</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">
+        <div class="sb-section-label">MENU UTAMA</div>
+        <a href="dashboard.html" class="sb-item" data-page="dashboard.html">
+          <i class="ti ti-layout-dashboard"></i> Dashboard
+        </a>
+        <a href="tools.html#harga" class="sb-item" data-page="tools.html">
+          <i class="ti ti-chart-bar"></i> Analisa Properti
+        </a>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">AKUN</div>
+        <a href="history.html" class="sb-item active" data-page="history.html">
+          <i class="ti ti-history"></i> Riwayat Analisa
+        </a>
+      </div>
+    </nav>
+    <div class="sb-bottom">
+      <div class="sb-status">
+        <div class="sb-dot"></div>
+        <div class="sb-status-text">Sistem aktif</div>
+      </div>
+      <div class="sb-action-icons">
+        <button class="sb-icon-btn" data-open-api-modal title="Pengaturan API & Model">
+          <i class="ti ti-settings"></i>
+        </button>
+        <button class="sb-icon-btn" data-logout title="Keluar">
+          <i class="ti ti-logout"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main-content">
+
+    <header class="topbar">
+      <button class="hamburger-btn" id="hamburger-btn" aria-label="Menu">
+        <i class="ti ti-menu-2"></i>
+      </button>
+      <div class="topbar-left" style="flex:1;margin-left:8px">
+        <div class="tb-title">Riwayat Analisa</div>
+        <div class="tb-sub" id="tb-date"></div>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-icon-btn gold" data-open-api-modal title="Pengaturan API & Model">
+          <i class="ti ti-key"></i>
+        </button>
+        <button class="tb-icon-btn" id="clear-history-btn" title="Hapus semua riwayat">
+          <i class="ti ti-trash"></i>
+        </button>
+        <button class="tb-icon-btn" data-logout title="Keluar">
+          <i class="ti ti-logout"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2 style="font-size:18px;font-weight:600;color:var(--navy)">Riwayat Analisa</h2>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:3px">Semua analisa yang pernah Anda lakukan tersimpan di sini.</p>
+        </div>
+        <a href="tools.html" class="btn btn-primary btn-sm">
+          <i class="ti ti-plus"></i> Analisa Baru
+        </a>
+      </div>
+
+      <!-- History list -->
+      <div id="history-container"></div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ===== HISTORY DETAIL MODAL ===== -->
+<div class="modal-backdrop hidden" id="history-modal">
+  <div class="modal-box" style="max-width:640px">
+    <div class="modal-header">
+      <div class="modal-title">
+        <i class="ti ti-file-text"></i>
+        <span id="history-modal-title">Detail Analisa</span>
+      </div>
+      <button class="modal-close" data-close-modal="history-modal"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" id="history-detail-content" style="max-height:70vh;overflow-y:auto"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" data-close-modal="history-modal">Tutup</button>
+      <button class="btn btn-primary" onclick="copyHistoryDetail()">
+        <i class="ti ti-copy"></i> Salin Hasil
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== API MODAL ===== -->
+<div class="modal-backdrop hidden" id="api-modal">
+  <div class="modal-box api-modal-box">
+    <div class="modal-header">
+      <div class="modal-title"><i class="ti ti-key"></i> Pengaturan API & Model</div>
+      <button class="modal-close" data-close-modal="api-modal"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;line-height:1.6">
+        Masukkan API key OpenRouter Anda. Jika satu key mencapai limit, sistem otomatis beralih ke key berikutnya.
+      </p>
+      <div class="api-section-title">API KEY — OPENROUTER</div>
+      <div id="api-key-slots"></div>
+      <button class="add-slot-btn" id="add-key-btn"><i class="ti ti-plus"></i> Tambah API Key</button>
+      <div class="api-section-title">MODEL — OPENROUTER</div>
+      <div id="model-slots"></div>
+      <button class="add-slot-btn" id="add-model-btn"><i class="ti ti-plus"></i> Tambah Model</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" data-close-modal="api-modal">Batal</button>
+      <button class="btn btn-gold" id="save-api-btn">
+        <i class="ti ti-check"></i> Simpan Pengaturan
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/history.js"></script>
+<script src="js/tools.js"></script>
+<script>
+  // Init sidebar date & user
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!Auth.requireAuth()) return;
+    const session = Auth.getSession();
+    const nameEl = document.getElementById('sb-user-name');
+    const initEl = document.getElementById('sb-user-init');
+    if (nameEl) nameEl.textContent = session.name;
+    if (initEl) initEl.textContent = session.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const tbDate = document.getElementById('tb-date');
+    if (tbDate) tbDate.textContent = new Date().toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+
+    // Sidebar mobile
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const hamburger = document.getElementById('hamburger-btn');
+    hamburger?.addEventListener('click', () => { sidebar?.classList.add('open'); overlay?.classList.add('show'); document.body.style.overflow='hidden'; });
+    overlay?.addEventListener('click', () => { sidebar?.classList.remove('open'); overlay?.classList.remove('show'); document.body.style.overflow=''; });
+    document.querySelectorAll('[data-logout]').forEach(el => el.addEventListener('click', () => Auth.logout()));
+
+    // Close modals
+    document.querySelectorAll('[data-close-modal]').forEach(el => {
+      el.addEventListener('click', () => ModalManager.closeModal(el.getAttribute('data-close-modal')));
+    });
+
+    // API modal
+    ModalManager.initApiModal();
+  });
+
+  function copyHistoryDetail() {
+    const el = document.getElementById('history-detail-content');
+    if (el) ModalManager.copyText(el.innerText, 'Hasil Analisa');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PropVision Pro — Analisa Properti</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/tools.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon"><i class="ti ti-building-skyscraper"></i></div>
+      <div>
+        <div class="sb-logo-name">PropVision Pro</div>
+        <div class="sb-logo-tag">PROPERTY INTELLIGENCE</div>
+      </div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-avatar" id="sb-user-init">??</div>
+      <div>
+        <div class="sb-user-name" id="sb-user-name">Loading...</div>
+        <div class="sb-user-role">Agen Properti</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">
+        <div class="sb-section-label">MENU UTAMA</div>
+        <a href="dashboard.html" class="sb-item" data-page="dashboard.html">
+          <i class="ti ti-layout-dashboard"></i> Dashboard
+        </a>
+        <a href="tools.html#harga" class="sb-item active" data-page="tools.html">
+          <i class="ti ti-chart-bar"></i> Analisa Properti
+        </a>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">FITUR</div>
+        <a href="tools.html#harga" class="sb-item" onclick="switchTab('harga')">
+          <i class="ti ti-chart-bar"></i> Analisa Harga
+        </a>
+        <a href="tools.html#roi" class="sb-item" onclick="switchTab('roi')">
+          <i class="ti ti-trending-up"></i> Proyeksi ROI
+        </a>
+        <a href="tools.html#closing" class="sb-item" onclick="switchTab('closing')">
+          <i class="ti ti-users"></i> Profil & Skrip
+        </a>
+        <a href="tools.html#risiko" class="sb-item" onclick="switchTab('risiko')">
+          <i class="ti ti-shield-check"></i> Risiko & Keunggulan
+        </a>
+        <a href="tools.html#laporan" class="sb-item" onclick="switchTab('laporan')">
+          <i class="ti ti-file-description"></i> Laporan Lengkap
+          <span class="sb-badge">PRO</span>
+        </a>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">AKUN</div>
+        <a href="history.html" class="sb-item">
+          <i class="ti ti-history"></i> Riwayat Analisa
+        </a>
+      </div>
+    </nav>
+    <div class="sb-bottom">
+      <div class="sb-status">
+        <div class="sb-dot"></div>
+        <div class="sb-status-text">Sistem aktif</div>
+      </div>
+      <div class="sb-action-icons">
+        <button class="sb-icon-btn" data-open-api-modal title="Pengaturan API & Model">
+          <i class="ti ti-settings"></i>
+        </button>
+        <button class="sb-icon-btn" data-logout title="Keluar">
+          <i class="ti ti-logout"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main-content">
+
+    <header class="topbar">
+      <button class="hamburger-btn" id="hamburger-btn" aria-label="Menu">
+        <i class="ti ti-menu-2"></i>
+      </button>
+      <div class="topbar-left" style="flex:1;margin-left:8px">
+        <div class="tb-title" id="tb-title">Analisa Properti</div>
+        <div class="tb-sub" id="tb-date"></div>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-icon-btn gold" data-open-api-modal title="Pengaturan API & Model">
+          <i class="ti ti-key"></i>
+        </button>
+        <button class="tb-icon-btn" data-logout title="Keluar">
+          <i class="ti ti-logout"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- Tool Tabs -->
+      <div class="tool-tabs" id="tool-tabs">
+        <div class="tool-tab active" data-tab="harga">
+          <i class="ti ti-chart-bar"></i><span>Analisa Harga</span>
+        </div>
+        <div class="tool-tab" data-tab="roi">
+          <i class="ti ti-trending-up"></i><span>Proyeksi ROI</span>
+        </div>
+        <div class="tool-tab" data-tab="closing">
+          <i class="ti ti-users"></i><span>Profil & Skrip</span>
+        </div>
+        <div class="tool-tab" data-tab="risiko">
+          <i class="ti ti-shield-check"></i><span>Risiko & Keunggulan</span>
+        </div>
+        <div class="tool-tab" data-tab="laporan">
+          <i class="ti ti-file-description"></i><span>Laporan Lengkap</span>
+        </div>
+      </div>
+
+      <!-- ========== PANEL 1: ANALISA HARGA ========== -->
+      <div class="tool-panel active" data-panel="harga">
+        <div class="tool-layout">
+          <!-- Form -->
+          <div class="form-card">
+            <div class="form-card-header">
+              <i class="ti ti-home-search"></i>
+              <h3>Data Properti</h3>
+            </div>
+            <div class="form-card-body">
+              <form id="form-harga" novalidate>
+                <div class="form-group">
+                  <label class="form-label" for="h-lokasi">Lokasi / Area <span>*</span></label>
+                  <input type="text" id="h-lokasi" class="form-control" placeholder="Contoh: Serpong, Tangerang Selatan" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="h-tipe">Tipe Properti <span>*</span></label>
+                  <select id="h-tipe" class="form-control">
+                    <option value="">Pilih tipe properti</option>
+                    <option>Rumah Tapak</option>
+                    <option>Apartemen</option>
+                    <option>Ruko / Rukan</option>
+                    <option>Kavling / Tanah</option>
+                    <option>Gudang / Industri</option>
+                    <option>Villa</option>
+                    <option>Kios / Toko</option>
+                  </select>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div class="form-group">
+                    <label class="form-label" for="h-luas-tanah">Luas Tanah (m²)</label>
+                    <input type="text" id="h-luas-tanah" class="form-control" placeholder="Contoh: 120" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="h-luas-bangunan">Luas Bangunan (m²)</label>
+                    <input type="text" id="h-luas-bangunan" class="form-control" placeholder="Contoh: 180" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="h-harga">Harga Listing <span>*</span></label>
+                  <input type="text" id="h-harga" class="form-control" placeholder="Contoh: Rp 1.850.000.000" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="h-kondisi">Kondisi & Keterangan Tambahan</label>
+                  <textarea id="h-kondisi" class="form-control" placeholder="Contoh: Hook jalan 6m, dekat stasiun, renovasi 2023, SHM..."></textarea>
+                </div>
+                <button type="submit" class="analyze-btn" id="btn-harga">
+                  <i class="ti ti-sparkles"></i> Analisa Sekarang
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Result -->
+          <div class="result-card">
+            <div class="result-card-header">
+              <div class="result-card-title">
+                <i class="ti ti-report-analytics"></i> Hasil Analisa Harga
+              </div>
+              <div class="result-actions">
+                <button class="btn btn-outline btn-sm" id="copy-harga">
+                  <i class="ti ti-copy"></i> Salin
+                </button>
+              </div>
+            </div>
+            <div class="result-body" id="result-harga"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== PANEL 2: ROI ========== -->
+      <div class="tool-panel" data-panel="roi">
+        <div class="tool-layout">
+          <div class="form-card">
+            <div class="form-card-header">
+              <i class="ti ti-calculator"></i>
+              <h3>Data Investasi</h3>
+            </div>
+            <div class="form-card-body">
+              <form id="form-roi" novalidate>
+                <div class="form-group">
+                  <label class="form-label" for="r-lokasi">Lokasi / Area <span>*</span></label>
+                  <input type="text" id="r-lokasi" class="form-control" placeholder="Contoh: Kelapa Gading, Jakarta Utara" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="r-tipe">Tipe Properti <span>*</span></label>
+                  <select id="r-tipe" class="form-control">
+                    <option value="">Pilih tipe properti</option>
+                    <option>Rumah Tapak</option>
+                    <option>Apartemen</option>
+                    <option>Ruko / Rukan</option>
+                    <option>Kavling / Tanah</option>
+                    <option>Gudang / Industri</option>
+                    <option>Villa</option>
+                    <option>Kios / Toko</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="r-harga">Harga Beli <span>*</span></label>
+                  <input type="text" id="r-harga" class="form-control" placeholder="Contoh: Rp 2.500.000.000" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="r-sewa">Estimasi Harga Sewa/Bulan</label>
+                  <input type="text" id="r-sewa" class="form-control" placeholder="Contoh: Rp 15.000.000/bulan" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="r-tujuan">Tujuan Investasi</label>
+                  <select id="r-tujuan" class="form-control">
+                    <option value="Disewakan">Disewakan</option>
+                    <option value="Dijual kembali (capital gain)">Dijual kembali (capital gain)</option>
+                    <option value="Disewakan lalu dijual">Disewakan lalu dijual</option>
+                    <option value="Digunakan sendiri">Digunakan sendiri</option>
+                  </select>
+                </div>
+                <button type="submit" class="analyze-btn" id="btn-roi">
+                  <i class="ti ti-sparkles"></i> Hitung Proyeksi ROI
+                </button>
+              </form>
+            </div>
+          </div>
+          <div class="result-card">
+            <div class="result-card-header">
+              <div class="result-card-title">
+                <i class="ti ti-trending-up"></i> Proyeksi ROI & Investasi
+              </div>
+              <div class="result-actions">
+                <button class="btn btn-outline btn-sm" id="copy-roi">
+                  <i class="ti ti-copy"></i> Salin
+                </button>
+              </div>
+            </div>
+            <div class="result-body" id="result-roi"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== PANEL 3: CLOSING ========== -->
+      <div class="tool-panel" data-panel="closing">
+        <div class="tool-layout">
+          <div class="form-card">
+            <div class="form-card-header">
+              <i class="ti ti-message-dots"></i>
+              <h3>Data untuk Closing</h3>
+            </div>
+            <div class="form-card-body">
+              <form id="form-closing" novalidate>
+                <div class="form-group">
+                  <label class="form-label" for="c-lokasi">Lokasi / Area <span>*</span></label>
+                  <input type="text" id="c-lokasi" class="form-control" placeholder="Contoh: BSD City, Tangerang" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="c-tipe">Tipe Properti <span>*</span></label>
+                  <select id="c-tipe" class="form-control">
+                    <option value="">Pilih tipe properti</option>
+                    <option>Rumah Tapak</option>
+                    <option>Apartemen</option>
+                    <option>Ruko / Rukan</option>
+                    <option>Kavling / Tanah</option>
+                    <option>Gudang / Industri</option>
+                    <option>Villa</option>
+                    <option>Kios / Toko</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="c-harga">Harga Properti <span>*</span></label>
+                  <input type="text" id="c-harga" class="form-control" placeholder="Contoh: Rp 3.200.000.000" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="c-fitur">Keunggulan / Fitur Utama</label>
+                  <textarea id="c-fitur" class="form-control" placeholder="Contoh: Pojok, 2 carport, kolam renang, cluster premium, dekat tol..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="c-target">Target Pembeli (jika diketahui)</label>
+                  <input type="text" id="c-target" class="form-control" placeholder="Contoh: Pasangan muda, investor, pebisnis" />
+                </div>
+                <button type="submit" class="analyze-btn" id="btn-closing">
+                  <i class="ti ti-sparkles"></i> Buat Skrip Closing
+                </button>
+              </form>
+            </div>
+          </div>
+          <div class="result-card">
+            <div class="result-card-header">
+              <div class="result-card-title">
+                <i class="ti ti-users"></i> Profil Buyer & Skrip Closing
+              </div>
+              <div class="result-actions">
+                <button class="btn btn-outline btn-sm" id="copy-closing">
+                  <i class="ti ti-copy"></i> Salin
+                </button>
+              </div>
+            </div>
+            <div class="result-body" id="result-closing"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== PANEL 4: RISIKO ========== -->
+      <div class="tool-panel" data-panel="risiko">
+        <div class="tool-layout">
+          <div class="form-card">
+            <div class="form-card-header">
+              <i class="ti ti-shield-search"></i>
+              <h3>Data Due Diligence</h3>
+            </div>
+            <div class="form-card-body">
+              <form id="form-risiko" novalidate>
+                <div class="form-group">
+                  <label class="form-label" for="rk-lokasi">Lokasi / Area <span>*</span></label>
+                  <input type="text" id="rk-lokasi" class="form-control" placeholder="Contoh: Pondok Indah, Jakarta Selatan" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="rk-tipe">Tipe Properti <span>*</span></label>
+                  <select id="rk-tipe" class="form-control">
+                    <option value="">Pilih tipe properti</option>
+                    <option>Rumah Tapak</option>
+                    <option>Apartemen</option>
+                    <option>Ruko / Rukan</option>
+                    <option>Kavling / Tanah</option>
+                    <option>Gudang / Industri</option>
+                    <option>Villa</option>
+                    <option>Kios / Toko</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="rk-harga">Harga Properti <span>*</span></label>
+                  <input type="text" id="rk-harga" class="form-control" placeholder="Contoh: Rp 5.000.000.000" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="rk-kondisi">Kondisi Fisik Properti</label>
+                  <textarea id="rk-kondisi" class="form-control" placeholder="Contoh: Bangunan 15 tahun, renovasi minor, atap bocor, listrik 2200VA..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="rk-sekitar">Kondisi Lingkungan Sekitar</label>
+                  <textarea id="rk-sekitar" class="form-control" placeholder="Contoh: Dekat pusat kota, akses jalan sempit, area banjir, dekat sekolah..."></textarea>
+                </div>
+                <button type="submit" class="analyze-btn" id="btn-risiko">
+                  <i class="ti ti-sparkles"></i> Analisa Risiko & Keunggulan
+                </button>
+              </form>
+            </div>
+          </div>
+          <div class="result-card">
+            <div class="result-card-header">
+              <div class="result-card-title">
+                <i class="ti ti-shield-check"></i> Risiko & Keunggulan
+              </div>
+              <div class="result-actions">
+                <button class="btn btn-outline btn-sm" id="copy-risiko">
+                  <i class="ti ti-copy"></i> Salin
+                </button>
+              </div>
+            </div>
+            <div class="result-body" id="result-risiko"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== PANEL 5: LAPORAN LENGKAP ========== -->
+      <div class="tool-panel" data-panel="laporan">
+        <div class="tool-layout">
+          <div class="form-card">
+            <div class="form-card-header">
+              <i class="ti ti-file-description"></i>
+              <h3>Data Laporan Lengkap</h3>
+            </div>
+            <div class="form-card-body">
+              <form id="form-laporan" novalidate>
+                <div class="form-group">
+                  <label class="form-label" for="l-lokasi">Lokasi / Area <span>*</span></label>
+                  <input type="text" id="l-lokasi" class="form-control" placeholder="Contoh: Menteng, Jakarta Pusat" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="l-tipe">Tipe Properti <span>*</span></label>
+                  <select id="l-tipe" class="form-control">
+                    <option value="">Pilih tipe properti</option>
+                    <option>Rumah Tapak</option>
+                    <option>Apartemen</option>
+                    <option>Ruko / Rukan</option>
+                    <option>Kavling / Tanah</option>
+                    <option>Gudang / Industri</option>
+                    <option>Villa</option>
+                    <option>Kios / Toko</option>
+                  </select>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div class="form-group">
+                    <label class="form-label" for="l-luas-tanah">Luas Tanah (m²)</label>
+                    <input type="text" id="l-luas-tanah" class="form-control" placeholder="120" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="l-luas-bangunan">Luas Bangunan (m²)</label>
+                    <input type="text" id="l-luas-bangunan" class="form-control" placeholder="200" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="l-harga">Harga Listing <span>*</span></label>
+                  <input type="text" id="l-harga" class="form-control" placeholder="Contoh: Rp 8.500.000.000" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="l-kondisi">Deskripsi & Kondisi Properti</label>
+                  <textarea id="l-kondisi" class="form-control" placeholder="Jelaskan kondisi, keunggulan, dan detail properti..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="l-tujuan">Tujuan Klien</label>
+                  <select id="l-tujuan" class="form-control">
+                    <option value="Investasi jangka panjang">Investasi jangka panjang</option>
+                    <option value="Hunian pribadi / keluarga">Hunian pribadi / keluarga</option>
+                    <option value="Bisnis / komersial">Bisnis / komersial</option>
+                    <option value="Diversifikasi portofolio">Diversifikasi portofolio</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="l-klien">Nama Klien (opsional)</label>
+                  <input type="text" id="l-klien" class="form-control" placeholder="Contoh: Bapak Hendra Wijaya" />
+                </div>
+                <button type="submit" class="analyze-btn" id="btn-laporan">
+                  <i class="ti ti-sparkles"></i> Buat Laporan Lengkap
+                </button>
+              </form>
+            </div>
+          </div>
+          <div class="result-card">
+            <div class="result-card-header">
+              <div class="result-card-title">
+                <i class="ti ti-file-description"></i> Laporan Konsultasi Lengkap
+              </div>
+              <div class="result-actions">
+                <button class="btn btn-outline btn-sm" id="copy-laporan">
+                  <i class="ti ti-copy"></i> Salin Laporan
+                </button>
+              </div>
+            </div>
+            <div class="result-body" id="result-laporan"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </main>
+</div>
+
+<!-- ===== API MODAL ===== -->
+<div class="modal-backdrop hidden" id="api-modal">
+  <div class="modal-box api-modal-box">
+    <div class="modal-header">
+      <div class="modal-title"><i class="ti ti-key"></i> Pengaturan API & Model</div>
+      <button class="modal-close" data-close-modal="api-modal"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;line-height:1.6">
+        Masukkan API key OpenRouter Anda. Jika satu key mencapai limit, sistem otomatis beralih ke key berikutnya. Model terpanggil bersamaan dan hasil tercepat yang digunakan.
+      </p>
+      <div class="api-section-title">API KEY — OPENROUTER</div>
+      <div id="api-key-slots"></div>
+      <button class="add-slot-btn" id="add-key-btn"><i class="ti ti-plus"></i> Tambah API Key</button>
+
+      <div class="api-section-title">MODEL — OPENROUTER</div>
+      <div id="model-slots"></div>
+      <button class="add-slot-btn" id="add-model-btn"><i class="ti ti-plus"></i> Tambah Model</button>
+
+      <div style="margin-top:12px;padding:10px 14px;background:var(--bg);border-radius:var(--radius-sm);font-size:11px;color:var(--text-muted);line-height:1.6">
+        <strong style="color:var(--text-secondary)">Contoh model gratis OpenRouter:</strong><br>
+        google/gemini-flash-1.5 &nbsp;|&nbsp; meta-llama/llama-3.1-8b-instruct:free<br>
+        mistralai/mistral-7b-instruct:free &nbsp;|&nbsp; qwen/qwen-2-7b-instruct:free
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" data-close-modal="api-modal">Batal</button>
+      <button class="btn btn-gold" id="save-api-btn">
+        <i class="ti ti-check"></i> Simpan Pengaturan
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/history.js"></script>
+<script src="js/tools.js"></script>
+<script>
+  // Helper for sidebar tab switch
+  function switchTab(tab) {
+    window.location.hash = tab;
+    // tools.js handles the rest via hash
+  }
+</script>
+</body>
+</html>
