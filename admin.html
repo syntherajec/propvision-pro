@@ -56,15 +56,6 @@
       </button>
     </div>
 
-    <!-- Alert panduan -->
-    <div class="alert alert-warning" style="margin-bottom:16px">
-      <i class="ti ti-info-circle"></i>
-      <div>
-        <strong>Cara Kerja:</strong> Generate kode lisensi di sini → salin → kirim ke pembeli via WhatsApp → pembeli input kode di halaman login → langsung bisa akses dari device manapun.
-        <br><strong>Setelah generate kode baru</strong>, tambahkan kode tersebut ke file <code style="background:rgba(0,0,0,0.1);padding:1px 5px;border-radius:3px">js/auth.js</code> di bagian <code style="background:rgba(0,0,0,0.1);padding:1px 5px;border-radius:3px">VALID_LICENSES</code>, lalu upload ulang ke GitHub.
-      </div>
-    </div>
-
     <div class="admin-grid">
 
       <!-- Generate kode -->
@@ -88,7 +79,7 @@
               <input type="text" id="buyer-note" class="form-control" placeholder="Contoh: Agen ERA Surabaya" />
             </div>
             <button type="submit" class="btn btn-gold btn-full">
-              <i class="ti ti-sparkles"></i> Generate Kode Lisensi
+              <i class="ti ti-sparkles"></i> Generate & Aktifkan Kode
             </button>
           </form>
 
@@ -96,7 +87,7 @@
           <div id="gen-result" class="hidden" style="margin-top:16px">
             <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--radius-md);padding:16px">
               <div style="font-size:12px;font-weight:600;color:#166534;margin-bottom:12px;display:flex;align-items:center;gap:6px">
-                <i class="ti ti-check-circle"></i> Kode Lisensi Berhasil Dibuat
+                <i class="ti ti-check-circle"></i> Kode Aktif — Pembeli Bisa Langsung Login!
               </div>
 
               <div style="background:#fff;border:1px solid #86efac;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center">
@@ -104,9 +95,8 @@
                 <div id="result-code" style="font-size:22px;font-weight:700;color:var(--navy);font-family:'Courier New',monospace;letter-spacing:3px"></div>
               </div>
 
-              <div style="font-size:12px;color:#166534;margin-bottom:8px">
-                <strong>Nama:</strong> <span id="result-name"></span><br>
-                <strong>Catatan:</strong> <span id="result-note"></span>
+              <div style="font-size:12px;color:#166534;margin-bottom:10px">
+                <strong>Nama:</strong> <span id="result-name"></span>
               </div>
 
               <div style="background:#fff;border:1px solid #86efac;border-radius:8px;padding:10px;margin-bottom:10px">
@@ -122,13 +112,6 @@
                   <i class="ti ti-brand-whatsapp"></i> Salin Pesan WA
                 </button>
               </div>
-
-              <hr style="margin:12px 0;border-color:#86efac">
-
-              <div style="font-size:11px;color:#166534;background:#dcfce7;padding:10px;border-radius:6px;line-height:1.7">
-                <strong>⚠️ Langkah wajib:</strong> Tambahkan baris berikut ke file <code>js/auth.js</code> di bagian <code>VALID_LICENSES</code>, lalu upload ulang ke GitHub:<br><br>
-                <code id="code-snippet" style="background:#fff;display:block;padding:6px 8px;border-radius:4px;font-size:11px;word-break:break-all"></code>
-              </div>
             </div>
           </div>
         </div>
@@ -138,7 +121,7 @@
       <div class="admin-card">
         <div class="admin-card-header">
           <i class="ti ti-list"></i>
-          <h3>Lisensi Aktif Saat Ini</h3>
+          <h3>Lisensi Aktif (<span id="total-licenses">0</span>)</h3>
         </div>
         <div class="admin-card-body" style="padding:0">
           <div class="user-table-wrap">
@@ -153,10 +136,6 @@
               </thead>
               <tbody id="license-tbody"></tbody>
             </table>
-          </div>
-          <div style="padding:12px 16px;background:var(--bg);border-top:1px solid var(--border);font-size:11px;color:var(--text-muted);line-height:1.6">
-            <i class="ti ti-info-circle" style="vertical-align:-2px"></i>
-            Daftar ini diambil langsung dari file <code>js/auth.js</code>. Untuk hapus lisensi, edit file tersebut dan upload ulang ke GitHub.
           </div>
         </div>
       </div>
@@ -174,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const gate  = document.getElementById('admin-gate');
   const panel = document.getElementById('admin-panel');
 
-  // Toggle password
+  /* ---- Toggle password visibility ---- */
   const passInput = document.getElementById('admin-pass-input');
   document.getElementById('toggle-admin-pass')?.addEventListener('click', () => {
     const isPass = passInput.type === 'password';
@@ -183,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ? '<i class="ti ti-eye-off"></i>' : '<i class="ti ti-eye"></i>';
   });
 
-  // Gate unlock
+  /* ---- Gate unlock ---- */
   const tryUnlock = () => {
     if (passInput.value === ADMIN_PASS) {
       gate.classList.add('hidden');
@@ -199,22 +178,22 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => { passInput.classList.remove('error'); }, 1200);
     }
   };
-
   document.getElementById('admin-pass-btn')?.addEventListener('click', tryUnlock);
   passInput?.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
 
-  // Admin logout
+  /* ---- Admin logout ---- */
   document.getElementById('admin-logout')?.addEventListener('click', () => {
     gate.classList.remove('hidden');
     panel.classList.add('hidden');
     passInput.value = '';
   });
 
-  // Render license table from auth.js VALID_LICENSES
+  /* ---- Render license table ---- */
   function renderLicenseTable() {
     const tbody = document.getElementById('license-tbody');
     if (!tbody) return;
     const licenses = Auth.getLicenses();
+    document.getElementById('total-licenses').textContent = licenses.length;
     tbody.innerHTML = '';
 
     if (licenses.length === 0) {
@@ -224,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     licenses.forEach(lic => {
       const initials = lic.name.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+      const isBuiltin = !lic.createdAt; // lisensi bawaan tidak punya createdAt
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>
@@ -235,20 +215,31 @@ document.addEventListener('DOMContentLoaded', () => {
         <td style="font-family:'Courier New',monospace;font-size:12px;font-weight:600;color:var(--navy);letter-spacing:1px">${esc(lic.code)}</td>
         <td style="font-size:12px;color:var(--text-muted)">${esc(lic.note || '-')}</td>
         <td>
-          <button class="copy-btn-sm" data-copy="${esc(lic.code)}">
-            <i class="ti ti-copy"></i> Salin
-          </button>
+          <div style="display:flex;gap:6px">
+            <button class="copy-btn-sm" data-copy="${esc(lic.code)}" title="Salin kode">
+              <i class="ti ti-copy"></i>
+            </button>
+            ${isBuiltin ? '' : `<button class="del-btn-sm" data-del="${esc(lic.code)}" title="Hapus lisensi"><i class="ti ti-trash"></i></button>`}
+          </div>
         </td>`;
       tbody.appendChild(tr);
-      tr.querySelector('[data-copy]')?.addEventListener('click', (e) => {
+
+      tr.querySelector('[data-copy]')?.addEventListener('click', e => {
         copyText(e.currentTarget.getAttribute('data-copy'), 'Kode lisensi');
+      });
+      tr.querySelector('[data-del]')?.addEventListener('click', e => {
+        const code = e.currentTarget.getAttribute('data-del');
+        if (confirm(`Hapus lisensi "${code}"? Pembeli tidak bisa login lagi.`)) {
+          Auth.removeLicense(code);
+          renderLicenseTable();
+          toast('Lisensi berhasil dihapus', 'gold');
+        }
       });
     });
   }
 
-  // Generate form
-  const genForm = document.getElementById('gen-form');
-  genForm?.addEventListener('submit', (e) => {
+  /* ---- Generate form ---- */
+  document.getElementById('gen-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const name = document.getElementById('buyer-name').value.trim();
     const note = document.getElementById('buyer-note').value.trim();
@@ -257,15 +248,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!name) { nameErr.classList.add('show'); return; }
 
-    const code = Auth.generateLicenseCode();
-    const waMsg = `Halo ${name}! 👋\n\nBerikut kode akses PropVision Pro Anda:\n\n🔑 *${code}*\n\nCara masuk:\n1. Buka link berikut: ${window.location.origin}/index.html\n2. Masukkan kode di atas\n3. Klik "Masuk ke Platform"\n\nSelamat menggunakan PropVision Pro! 🏠`;
-    const snippet = `{ code: '${code}', name: '${name}', note: '${note || 'Pembeli'}' },`;
+    const code  = Auth.generateLicenseCode();
+    const waMsg = `Halo ${name}! 👋\n\nBerikut kode akses PropVision Pro Anda:\n\n🔑 *${code}*\n\nCara masuk:\n1. Buka: ${window.location.origin}/index.html\n2. Masukkan kode di atas\n3. Klik "Masuk ke Platform"\n\nSelamat menggunakan PropVision Pro! 🏠`;
 
-    document.getElementById('result-code').textContent  = code;
-    document.getElementById('result-name').textContent  = name;
-    document.getElementById('result-note').textContent  = note || '-';
-    document.getElementById('wa-template').textContent  = waMsg;
-    document.getElementById('code-snippet').textContent = snippet;
+    // Simpan langsung ke localStorage — pembeli langsung bisa login
+    Auth.addLicense(code, name, note);
+
+    document.getElementById('result-code').textContent = code;
+    document.getElementById('result-name').textContent = name;
+    document.getElementById('wa-template').textContent = waMsg;
     document.getElementById('gen-result').classList.remove('hidden');
 
     document.getElementById('copy-code-btn').onclick = () => copyText(code, 'Kode lisensi');
@@ -274,10 +265,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('buyer-name').value = '';
     document.getElementById('buyer-note').value = '';
 
-    toast('Kode berhasil dibuat! Salin dan kirim ke pembeli.', 'success');
+    renderLicenseTable();
+    toast('Kode aktif! Pembeli bisa langsung login sekarang.', 'success');
   });
 
-  // Utilities
+  /* ---- Utilities ---- */
   function copyText(text, label) {
     navigator.clipboard.writeText(text).then(() => {
       toast(`${label} berhasil disalin`, 'success');
